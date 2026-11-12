@@ -809,7 +809,7 @@
             </div>
             <div class="field">
               <label for="qtValue">Temperature (°C)</label>
-              <input id="qtValue" type="number" min="30" max="45" step="0.1" required placeholder="36.8">
+              <input id="qtValue" type="number" inputmode="decimal" enterkeyhint="done" min="30" max="45" step="0.1" required placeholder="36.8">
             </div>
             <div class="field">
               <label for="qtDate">Date</label>
@@ -1053,7 +1053,7 @@
               </div>
               <div class="field">
                 <label for="stValue">Temp (°C)</label>
-                <input id="stValue" type="number" min="30" max="45" step="0.1" required placeholder="36.8">
+                <input id="stValue" type="number" inputmode="decimal" enterkeyhint="done" min="30" max="45" step="0.1" required placeholder="36.8">
               </div>
               <div class="field">
                 <label for="stDate">Date</label>
@@ -1209,7 +1209,7 @@
           <div class="form-grid">
             <div class="field">
               <label for="admitId">Patient ID</label>
-              <input id="admitId" required value="P-${nextNum}" placeholder="P-175">
+              <input id="admitId" required autocapitalize="characters" autocorrect="off" value="P-${nextNum}" placeholder="P-175">
             </div>
             <div class="field">
               <label for="admitRoom">Vacant room</label>
@@ -1301,11 +1301,11 @@
         <div class="form-grid">
           <div class="field">
             <label for="setFever">Fever threshold (°C)</label>
-            <input id="setFever" type="number" step="0.1" min="36.5" max="40" value="${state.settings.feverThreshold}" ${editable ? '' : 'disabled'}>
+            <input id="setFever" type="number" inputmode="decimal" enterkeyhint="done" step="0.1" min="36.5" max="40" value="${state.settings.feverThreshold}" ${editable ? '' : 'disabled'}>
           </div>
           <div class="field">
             <label for="setDays">Consecutive afebrile days</label>
-            <input id="setDays" type="number" step="1" min="1" max="14" value="${state.settings.requiredNoFeverDays}" ${editable ? '' : 'disabled'}>
+            <input id="setDays" type="number" inputmode="numeric" enterkeyhint="done" step="1" min="1" max="14" value="${state.settings.requiredNoFeverDays}" ${editable ? '' : 'disabled'}>
           </div>
         </div>
         <div class="form-actions">
@@ -1441,7 +1441,7 @@
               <div class="form-grid">
                 <div class="field">
                   <label for="dtVal">Temperature (°C)</label>
-                  <input id="dtVal" type="number" min="30" max="45" step="0.1" required placeholder="36.8">
+                  <input id="dtVal" type="number" inputmode="decimal" enterkeyhint="done" min="30" max="45" step="0.1" required placeholder="36.8">
                 </div>
                 <div class="field">
                   <label for="dtDate">Date</label>

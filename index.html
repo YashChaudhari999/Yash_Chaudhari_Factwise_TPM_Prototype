@@ -3,7 +3,11 @@
 
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="color-scheme" content="light">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <title>CareTrack — Quarantine Ward Operations</title>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -143,7 +147,7 @@
           <div class="filter-pills" id="queueFilterPills"></div>
 
           <div class="filter-row">
-            <input id="queueSearch" type="search" placeholder="Search patient, ID, or room"
+            <input id="queueSearch" type="search" inputmode="search" enterkeyhint="search" autocorrect="off" placeholder="Search patient, ID, or room"
               style="flex:1;min-width:220px">
             <select id="queueSort">
               <option value="priority">Sort by care priority</option>
