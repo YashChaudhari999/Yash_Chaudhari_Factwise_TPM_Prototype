@@ -1,0 +1,14 @@
+# Documents & local Word lock files
+*.docx
+~$*
+
+# Agent & skill tooling
+.agents/
+skills/
+skills-lock.json
+
+# OS & environment artifacts
+.DS_Store
+Thumbs.db
+node_modules/
+.vercel/

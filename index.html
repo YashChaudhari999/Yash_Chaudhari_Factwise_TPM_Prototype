@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CareTrack — Quarantine Ward Operations</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg class="icon" viewBox="0 0 24 24">
+          <path d="M3 12h4l3-7 4 14 3-7h4" />
+        </svg>
+      </div>
+      <div>
+        <div class="brand-title">CareTrack</div>
+        <div class="brand-sub">74-bed quarantine &amp; fever ward workstation</div>
+      </div>
+    </div>
+    <div class="header-controls">
+      <span id="todayLabel" class="header-date tnum"></span>
+      <div class="role-box">
+        <label for="roleSelect">Role</label>
+        <select id="roleSelect" aria-label="Active role">
+          <option value="Nurse">Nurse</option>
+          <option value="Doctor">Doctor</option>
+          <option value="Admin">Admin Staff</option>
+          <option value="Head Doctor">Head Doctor</option>
+        </select>
+      </div>
+      <button type="button" class="ghost" id="resetBtn">Reset demo</button>
+    </div>
+  </header>
+
+  <nav class="nav-bar" aria-label="Primary screens">
+    <div class="tabs" id="navTabs" role="tablist">
+      <button type="button" class="tab-btn active" data-tab="overview" role="tab" aria-selected="true" aria-controls="tab-overview">
+        Operations overview
+      </button>
+      <button type="button" class="tab-btn" data-tab="queue" role="tab" aria-selected="false" aria-controls="tab-queue">
+        Care queue <span class="tab-count" id="badgeQueue">0</span>
+      </button>
+      <button type="button" class="tab-btn" data-tab="rooms" role="tab" aria-selected="false" aria-controls="tab-rooms">
+        Rooms &amp; admissions <span class="tab-count" id="badgeRooms">0/74</span>
+      </button>
+      <button type="button" class="tab-btn" data-tab="quality" role="tab" aria-selected="false" aria-controls="tab-quality">
+        Quality &amp; mortality <span class="tab-count" id="badgeQuality">85%</span>
+      </button>
+    </div>
+    <div class="role-banner" id="roleSummary"></div>
+  </nav>
+
+  <main>
+    <div id="globalAlerts"></div>
+
+    <!-- SCREEN 1: OPERATIONS OVERVIEW -->
+    <section id="tab-overview" class="tab-panel" role="tabpanel">
+      <div class="overview-top">
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Ward status</h2>
+              <div class="subtext">Sequential daily care: Nurse reading before Doctor round</div>
+            </div>
+            <button type="button" class="secondary sm" id="jumpToRoleQueueBtn">
+              Priority queue
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 12h14" />
+                <path d="m12 5 7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+          <div class="stat-matrix" id="kpiGrid"></div>
+          <div class="pipeline" id="pipelineSteps"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>74-bed floor status</h2>
+              <div class="subtext">Select any room cell to open its bedside fever journal</div>
+            </div>
+            <span class="mono-badge" id="overviewFloorMeta">74 / 74 occupied</span>
+          </div>
+          <div class="ward-strip-grid" id="overviewWardStrip"></div>
+          <div class="ward-legend">
+            <span class="legend-item"><span class="ward-dot" style="background:var(--warn)"></span> Needs temp</span>
+            <span class="legend-item"><span class="ward-dot" style="background:#334155"></span> Ready for Doctor</span>
+            <span class="legend-item"><span class="ward-dot" style="background:var(--bad)"></span> Fever</span>
+            <span class="legend-item"><span class="ward-dot" style="background:var(--accent)"></span> Discharge
+              queue</span>
+            <span class="legend-item"><span class="ward-dot" style="background:#94a3b8"></span> Rounds complete</span>
+            <span class="legend-item"><span class="ward-dot" style="background:#cbd5e1"></span> Vacant</span>
+          </div>
+        </section>
+      </div>
+
+      <div class="grid-2">
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2 id="quickPanelTitle">Role workspace</h2>
+              <div class="subtext" id="quickPanelSub"></div>
+            </div>
+          </div>
+          <div id="roleWorkspace"></div>
+        </section>
+
+        <aside>
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Doctor to Admin discharge queue</h2>
+              <span class="mono-badge accent" id="handoffCountPill">0</span>
+            </div>
+            <div id="handoffList"></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Recent ward log</h2>
+            </div>
+            <div class="feed" id="activityFeed"></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <!-- SCREEN 2: CARE QUEUE -->
+    <section id="tab-queue" class="tab-panel hidden" role="tabpanel">
+      <div class="grid-2">
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Patient care queue</h2>
+              <div class="subtext">Select a patient to inspect their multi-day fever chart and visit log</div>
+            </div>
+          </div>
+
+          <div class="filter-pills" id="queueFilterPills"></div>
+
+          <div class="filter-row">
+            <input id="queueSearch" type="search" placeholder="Search patient, ID, or room"
+              style="flex:1;min-width:220px">
+            <select id="queueSort">
+              <option value="priority">Sort by care priority</option>
+              <option value="room">Sort by room (01–74)</option>
+              <option value="streak">Sort by afebrile streak</option>
+              <option value="temp">Sort by latest temp</option>
+            </select>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Room / Patient</th>
+                  <th>Latest temp</th>
+                  <th>Afebrile track</th>
+                  <th>Daily sequence</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="queueTableBody"></tbody>
+            </table>
+          </div>
+          <div id="queueEmpty" class="empty hidden">No patients match the selected queue filter</div>
+        </section>
+
+        <aside id="queueActionSidebar"></aside>
+      </div>
+    </section>
+
+    <!-- SCREEN 3: 74-ROOM MAP & ADMISSIONS -->
+    <section id="tab-rooms" class="tab-panel hidden" role="tabpanel">
+      <div class="grid-2">
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>74-room ward map</h2>
+              <div class="subtext">Select an occupied room for its journal, or a vacant room to prefill admission</div>
+            </div>
+            <span class="mono-badge" id="roomCapacityPill">74 / 74 occupied</span>
+          </div>
+
+          <div class="ward-legend" style="margin-top:0;margin-bottom:12px">
+            <span class="legend-item"><span class="ward-dot" style="background:var(--warn)"></span> Needs temp</span>
+            <span class="legend-item"><span class="ward-dot" style="background:var(--ink)"></span> Ready for Doctor</span>
+            <span class="legend-item"><span class="ward-dot" style="background:var(--bad)"></span> Fever</span>
+            <span class="legend-item"><span class="ward-dot" style="background:var(--accent)"></span> Discharge queue</span>
+            <span class="legend-item"><span class="ward-dot" style="background:#94a3b8"></span> Rounds complete</span>
+            <span class="legend-item"><span class="ward-dot" style="background:#cbd5e1"></span> Vacant</span>
+          </div>
+
+          <div class="room-grid" id="roomGrid"></div>
+        </section>
+
+        <aside>
+          <section class="panel" id="admitPanel">
+            <div class="panel-head">
+              <h2>Admit patient</h2>
+              <span class="mono-badge">Admin</span>
+            </div>
+            <div id="admitContainer"></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Admin discharge queue</h2>
+              <span class="mono-badge accent" id="adminQueueBadge">0</span>
+            </div>
+            <div id="adminDischargePanel"></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <!-- SCREEN 4: QUALITY & MORTALITY -->
+    <section id="tab-quality" class="tab-panel hidden" role="tabpanel">
+      <div class="kpi-grid" id="qualityKpis"></div>
+
+      <div class="grid-equal">
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Benchmark performance (85% cure / 15% mortality ceiling)</h2>
+          </div>
+          <div id="benchmarkDetail"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Clinical policy thresholds</h2>
+            <span class="mono-badge">Head Doctor</span>
+          </div>
+          <div id="settingsContainer"></div>
+        </section>
+      </div>
+
+      <section class="panel" style="margin-top:16px">
+        <div class="panel-head">
+          <div>
+            <h2>Closed patient outcomes</h2>
+            <div class="subtext">Audit ledger of cured discharges and mortality cases contributing to facility
+              benchmarks</div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Patient</th>
+                <th>Room</th>
+                <th>Admitted</th>
+                <th>Closed date</th>
+                <th>Length of stay</th>
+                <th>Outcome</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody id="outcomesTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <!-- SLIDE-OVER BEDSIDE JOURNAL DRAWER -->
+  <div id="journalBackdrop" class="modal-backdrop" aria-hidden="true" role="dialog" aria-modal="true"
+    aria-labelledby="journalPatientName">
+    <div class="drawer" id="journalDrawer"></div>
+  </div>
+
+  <div id="toast" class="toast" aria-hidden="true" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
